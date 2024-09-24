@@ -5,24 +5,56 @@
     <title>YouTube Playlist</title>
     <style>
         body {
-            overflow: hidden;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        iframe {
+        #player {
             width: 560px;
             height: 315px;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://www.youtube.com/embed/videoseries?list=PLR95wj0nhDueoCrvzjr3WYJ8c_mtRA4pH" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div id="player"></div>
+
     <script>
-        let scrollInterval = setInterval(() => {
-            window.scrollBy(0, 1); // 1ピクセルずつスクロール
-        }, 100); // 0.1秒ごとにスクロール
+        // YouTube IFrame APIの読み込み
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        let player;
+        const videoIds = [
+            'iN70936k-Qw', // 1つ目の動画ID
+            'URW8fpBkhZY', // 2つ目の動画ID
+            // 必要に応じて動画IDを追加
+        ];
+        let currentVideoIndex = 0;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '315',
+                width: '560',
+                videoId: videoIds[currentVideoIndex],
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 1
+                }
+            });
+
+            // 指定した時間（秒）ごとに次の動画に切り替え
+            setInterval(() => {
+                currentVideoIndex++;
+                if (currentVideoIndex >= videoIds.length) {
+                    currentVideoIndex = 0; // ループする場合
+                }
+                player.loadVideoById(videoIds[currentVideoIndex]);
+            }, 5000); // 10秒ごとに切り替え
+        }
     </script>
 </body>
 </html>
